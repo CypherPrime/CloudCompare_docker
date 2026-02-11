@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 SHELL ["/bin/bash", "-c"]
 
@@ -15,7 +15,6 @@ RUN apt update && apt install -y \
     lsb-release \
     git \
     build-essential \
-    cmake \
     python3-pip \
     locales \
     mesa-utils \
@@ -23,6 +22,13 @@ RUN apt update && apt install -y \
     software-properties-common \
     pkg-config \
     wget \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install newer CMake from Kitware repository
+RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null \
+    && echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ jammy main' | tee /etc/apt/sources.list.d/kitware.list >/dev/null \
+    && apt update \
+    && apt install -y cmake \
     && rm -rf /var/lib/apt/lists/*
 
 # Locale
@@ -39,9 +45,8 @@ RUN apt update && apt install -y \
     libxcb-keysyms1 \
     libxcb-render-util0 \
     libxcb-util1 \
-    libgl1-mesa-glx \
+    libgl1 \
     libglu1-mesa \
-    libxkbcommon-x11-0 \
     libdbus-1-3 \
     && rm -rf /var/lib/apt/lists/*
 
@@ -55,20 +60,22 @@ RUN apt update && apt install -y \
     libzstd-dev \
     libtiff-dev \
     libgdal-dev \
-    liblas-dev \
+    liblaszip-dev \
     libboost-all-dev \
     libflann-dev \
     libpcl-dev \
     libvtk9-dev \
-    qtbase5-dev \
-    qt5-qmake \
-    libqt5svg5 \
-    libqt5opengl5 \
+    qt6-base-dev \
+    qt6-tools-dev \
+    qt6-tools-dev-tools \
+    qt6-l10n-tools \
+    libqt6svg6-dev \
+    libqt6opengl6-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Download and build CloudCompare from source
 RUN mkdir -p /opt/cloudcompare && cd /opt/cloudcompare && \
-    git clone --depth 1 https://github.com/CloudCompare/CloudCompare.git . && \
+    git clone --recursive --depth 1 https://github.com/CloudCompare/CloudCompare.git . && \
     mkdir build && cd build && \
     cmake .. \
     -DCMAKE_BUILD_TYPE=Release \
