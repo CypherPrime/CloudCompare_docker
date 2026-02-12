@@ -759,3 +759,7 @@ CloudCompare is available under the GPL2 license. Refer to CloudCompare's licens
 ## Support
 
 For issues with CloudCompare, visit the official repository. For Docker-specific issues, check the container logs and verify all mounts and environment variables are correctly set.
+
+## Author
+
+TAMANJI COURAGE --- Stratafy.co.za
